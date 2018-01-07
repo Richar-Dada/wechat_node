@@ -5,6 +5,8 @@ const https = require('https')
 const util = require('util')
 const accessTokenJson = require('./accessToken')
 const fs = require('fs')
+const menusJson = require('./menus')
+const URL = require('url')
 
 var WeChat = function (config) {
   this.config = config
@@ -37,6 +39,44 @@ var WeChat = function (config) {
       })
     })
   }
+
+  // 用于处理 https Post 请求方法
+  this.requestPost = function(url, data) {
+    return new Promise(function(resolve, reject) {
+      var urlData = URL.parse(url)
+      var options = {
+        hostname: urlData.hostname,
+        path: urlData.path,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Length': Buffer.byteLength(data, 'utf-8')
+        }
+      }
+
+      var req = https.request(options, function(res) {
+        var buffer = []
+        var result = ''
+
+        res.on('data', (data) => {
+          buffer.push(data)
+        })
+
+        res.on('end', () => {
+          result = Buffer.concat(buffer).toString('utf-8')
+          console.log('end')
+          resolve(result)
+        })
+      }).on('error', (err) => {
+        console.log(err)
+        reject(err)
+      })
+      console.log('-----------')
+      console.log(data)
+      req.write(data)
+      req.end()
+    })
+  }
 }
 
 WeChat.prototype.auth = function (req, res) {
@@ -57,6 +97,18 @@ WeChat.prototype.auth = function (req, res) {
   } else {
     res.send('mismatch')
   }
+
+  // 创建菜单
+  var that = this
+  this.getAccessToken()
+    .then((data) => {
+      var url = util.format(that.apiURL.createMenu, that.apiDomain, data)
+      console.log(url)
+      console.log(menusJson)
+      that.requestPost(url, JSON.stringify(menusJson)).then((data) => {
+        console.log(data)
+      })
+    })
 }
 
 WeChat.prototype.getAccessToken = function() {
