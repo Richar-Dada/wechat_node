@@ -7,6 +7,7 @@ const accessTokenJson = require('./accessToken')
 const fs = require('fs')
 const menusJson = require('./menus')
 const URL = require('url')
+const parseString = require('xml2js').parseString
 
 var WeChat = function (config) {
   this.config = config
@@ -131,6 +132,27 @@ WeChat.prototype.getAccessToken = function() {
     } else {
       resolve(accessTokenJson.access_token)
     }
+  })
+}
+
+/*
+  微信消息
+*/
+WeChat.prototype.handleMsg = function(req, res) {
+  var buffer = []
+  req.on('data', (data) => {
+    buffer.push(data)
+  })
+
+  req.on('end', () => {
+    var msgXml = Buffer.concat(buffer).toString('utf-8')
+    parseString(msgXml, { explicitArray: false }, (err, result) => {
+      if (!err) {
+        console.log(result)
+      } else {
+        console.log(err)
+      }
+    })
   })
 }
 

@@ -1,3 +1,4 @@
+
 const express = require('express')
 const wechat = require('./wechat')
 const config = require('./config')
@@ -19,6 +20,10 @@ app.get('/getAccessToken', (req, res) => {
     .catch((err) => {
       console.log('error: ' + err)
     })
+})
+
+app.post('/', (req, res) => {
+  wechatApp.handleMsg(req, res)
 })
 
 process.on('unhandledRejection', function (err, p) {
