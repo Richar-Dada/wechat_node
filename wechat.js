@@ -154,11 +154,47 @@ WeChat.prototype.handleMsg = function(req, res) {
         var toUser = result.ToUserName
         var fromUser = result.FromUserName
         console.log(result)
-        switch (result.Event.toLowerCase()) {
-          case 'subscribe':
-            res.send(msg.txtMsg(fromUser, toUser, '欢迎欢迎！热烈欢迎～'))
-            break
-        }
+        if (result.MsgType.toLowerCase() === 'event') {
+          switch (result.Event.toLowerCase()) {
+            case 'subscribe':
+              res.send(msg.txtMsg(fromUser, toUser, '欢迎欢迎！热烈欢迎～'))
+              break
+            case 'click':
+              var contentArr = [
+                {Title:"Node.js 微信自定义菜单",Description:"使用Node.js实现自定义微信菜单",PicUrl:"http://img.blog.csdn.net/20170605162832842?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72868520"},
+                {Title:"Node.js access_token的获取、存储及更新",Description:"Node.js access_token的获取、存储及更新",PicUrl:"http://img.blog.csdn.net/20170528151333883?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72783631"},
+                {Title:"Node.js 接入微信公众平台开发",Description:"Node.js 接入微信公众平台开发",PicUrl:"http://img.blog.csdn.net/20170605162832842?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72765279"}
+              ]
+              console.log(msg.graphicMsg(fromUser,toUser,contentArr))
+              res.send(msg.graphicMsg(fromUser,toUser,contentArr));
+              break
+          }
+        } else {
+          //判断消息类型为 文本消息
+          if(result.MsgType.toLowerCase() === "text"){
+            //根据消息内容返回消息信息
+            switch(result.Content){
+              case '1':
+                res.send(msg.txtMsg(fromUser,toUser,'Hello ！我的英文名字叫 H-VK'));
+                break;
+              case '2':
+                res.send(msg.txtMsg(fromUser,toUser,'Node.js是一个开放源代码、跨平台的JavaScript语言运行环境，采用Google开发的V8运行代码,使用事件驱动、非阻塞和异步输入输出模型等技术来提高性能，可优化应用程序的传输量和规模。这些技术通常用于数据密集的事实应用程序'));
+                break;
+              case '文章':
+                var contentArr = [
+                    {Title:"Node.js 微信自定义菜单",Description:"使用Node.js实现自定义微信菜单",PicUrl:"http://img.blog.csdn.net/20170605162832842?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72868520"},
+                    {Title:"Node.js access_token的获取、存储及更新",Description:"Node.js access_token的获取、存储及更新",PicUrl:"http://img.blog.csdn.net/20170528151333883?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72783631"},
+                    {Title:"Node.js 接入微信公众平台开发",Description:"Node.js 接入微信公众平台开发",PicUrl:"http://img.blog.csdn.net/20170605162832842?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHZrQ29kZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast",Url:"http://blog.csdn.net/hvkcoder/article/details/72765279"}
+                  ];
+                  //回复图文消息
+                  res.send(msg.graphicMsg(fromUser,toUser,contentArr));
+                break;
+                default :
+                      res.send(msg.txtMsg(fromUser,toUser,'没有这个选项哦'));
+                    break;
+              }
+            }
+          }
       } else {
         console.log(err)
       }
