@@ -23,6 +23,7 @@ app.get('/getAccessToken', (req, res) => {
 })
 
 app.post('/', (req, res) => {
+  console.log('data comming')
   wechatApp.handleMsg(req, res)
 })
 

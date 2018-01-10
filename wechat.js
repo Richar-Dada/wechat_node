@@ -8,7 +8,8 @@ const fs = require('fs')
 const menusJson = require('./menus')
 const URL = require('url')
 const parseString = require('xml2js').parseString
-
+const msg = require('./msg')
+ 
 var WeChat = function (config) {
   this.config = config
   this.token = config.token
@@ -147,8 +148,17 @@ WeChat.prototype.handleMsg = function(req, res) {
   req.on('end', () => {
     var msgXml = Buffer.concat(buffer).toString('utf-8')
     parseString(msgXml, { explicitArray: false }, (err, result) => {
+      console.log('gogo')
       if (!err) {
+        result = result.xml
+        var toUser = result.ToUserName
+        var fromUser = result.FromUserName
         console.log(result)
+        switch (result.Event.toLowerCase()) {
+          case 'subscribe':
+            res.send(msg.txtMsg(fromUser, toUser, '欢迎欢迎！热烈欢迎～'))
+            break
+        }
       } else {
         console.log(err)
       }
